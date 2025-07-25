@@ -1,70 +1,40 @@
-const axios = require("axios");
-const fs = require("fs-extra");
-const { HttpsProxyAgent } = require("https-proxy-agent");
-const { alldown } = require("shaon-videos-downloader"); // সঠিক import
-
 module.exports = {
-  config: {
-    name: "autodl",
-    version: "0.1.3",
-    hasPermssion: 0,
-    credits: "SHAON + ChatGPT",
-    description: "Auto video downloader with proxy support",
-    commandCategory: "user",
-    usages: "",
-    cooldowns: 5,
-  },
+ config:{
+ name: "autodl",
+ version: "0.0.2",
+ hasPermssion: 0,
+ credits: "SHAON",
+ description: "auto video download",
+ commandCategory: "user",
+ usages: "",
+ cooldowns: 5,
+},
+run: async function({ api, event, args }) {},
+handleEvent: async function ({ api, event, args }) {
+ const axios = require("axios")
+ const request = require("request")
+ const fs = require("fs-extra")
+ const content = event.body ? event.body : '';
+ const body = content.toLowerCase();
+ const { alldown } = require("shaon-videos-downloader")
+ if (body.startsWith("https://")) {
+ api.setMessageReaction("🐥", event.messageID, (err) => {}, true);
+const data = await alldown(content);
+ console.log(data)
+ let Shaon = data.url;
+ api.setMessageReaction("✅", event.messageID, (err) => {}, true);
+ const video = (await axios.get(Shaon, {
+ responseType: "arraybuffer",
+ })).data;
+ fs.writeFileSync(__dirname + "/cache/auto.mp4", Buffer.from(video, "utf-8"))
 
-  run: async function () {},
+ return api.sendMessage({
+ body: `𝐢𝐭'𝐳 𝐃𝐞𝐯𝐢𝐥 𝐛𝐨𝐭||ᵃˢʰⁱk 
+📥⚡𝗔𝘂𝘁𝗼 𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱𝗲𝗿⚡📂
+🎬 𝐄𝐧𝐣𝐨𝐲 𝐭𝐡𝐞 𝐕𝐢𝐝𝐞𝐨 🎀`,
+ attachment: fs.createReadStream(__dirname + "/cache/auto.mp4")
 
-  handleEvent: async function ({ api, event }) {
-    try {
-      const content = event.body || "";
-      const body = content.toLowerCase();
-
-      if (!body.startsWith("https://")) return;
-
-      api.setMessageReaction("🐥", event.messageID, () => {}, true);
-
-      console.log("Link detected:", content);
-
-      const data = await alldown(content);
-      if (!data || !data.url) throw new Error("ভিডিও লিংক পাওয়া যায়নি!");
-
-      const videoUrl = data.url;
-      console.log("Video URL:", videoUrl);
-
-      // Proxy agent (আপনার proxy IP/port দিন এখানে)
-      const proxyAgent = new HttpsProxyAgent("http://108.162.192.0:80");
-
-      // ভিডিও ডাউনলোড
-      const response = await axios.get(videoUrl, {
-        responseType: "arraybuffer",
-        httpsAgent: proxyAgent,
-        timeout: 20000,
-      });
-
-      const filePath = __dirname + "/cache/auto.mp4";
-      fs.writeFileSync(filePath, Buffer.from(response.data));
-
-      api.setMessageReaction("✅", event.messageID, () => {}, true);
-
-      return api.sendMessage(
-        {
-          body: "ভিডিও ডাউনলোড সম্পন্ন ✅",
-          attachment: fs.createReadStream(filePath),
-        },
-        event.threadID,
-        () => fs.unlinkSync(filePath),
-        event.messageID
-      );
-    } catch (error) {
-      console.error("Autodl error:", error);
-      return api.sendMessage(
-        "❌ ভিডিও ডাউনলোডে সমস্যা:\n" + error.message,
-        event.threadID,
-        event.messageID
-      );
-    }
-  },
-};
+ }, event.threadID, event.messageID);
+ }
+}
+}
