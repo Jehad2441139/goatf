@@ -1,0 +1,61 @@
+const axios = require("axios");
+
+module.exports.config = {
+
+  name: "news",
+
+  version: "1.0.0",
+
+  hasPermission: 0,
+
+  credits: "Jehad Joy",
+
+  description: "Get latest news headlines",
+
+  commandCategory: "news",
+
+  usages: "/news",
+
+  cooldowns: 5
+
+};
+
+module.exports.run = async function ({ api, event }) {
+
+  const API_KEY = "pub_388e2cf4f71a465a82f4195a9acfe4f0";
+
+  const url = `https://newsdata.io/api/1/news?apikey=${API_KEY}&language=en&country=bd&category=top`;
+
+  try {
+
+    const res = await axios.get(url);
+
+    const articles = res.data.results;
+
+    if (!articles || articles.length === 0) {
+
+      return api.sendMessage("😕 Sorry, no news found right now.", event.threadID, event.messageID);
+
+    }
+
+    let message = "📰 Latest News:\n\n";
+
+    for (let i = 0; i < Math.min(5, articles.length); i++) {
+
+      const news = articles[i];
+
+      message += `🔹 ${news.title}\n🌐 Source: ${news.source_id}\n🔗 ${news.link}\n\n`;
+
+    }
+
+    api.sendMessage(message.trim(), event.threadID, event.messageID);
+
+  } catch (error) {
+
+    console.error("News Fetch Error:", error);
+
+    api.sendMessage("❌ Failed to fetch news. Try again later.", event.threadID, event.messageID);
+
+  }
+
+};
