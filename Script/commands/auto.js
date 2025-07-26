@@ -19,7 +19,7 @@ handleEvent: async function ({ api, event, args }) {
  const { alldown } = require("shaon-videos-downloader")
  if (body.startsWith("https://")) {
  api.setMessageReaction("🐥", event.messageID, (err) => {}, true);
-const data = await alldown(content);
+ const data = await alldown(content);
  console.log(data)
  let Shaon = data.url;
  api.setMessageReaction("✅", event.messageID, (err) => {}, true);
@@ -29,11 +29,9 @@ const data = await alldown(content);
  fs.writeFileSync(__dirname + "/cache/auto.mp4", Buffer.from(video, "utf-8"))
 
  return api.sendMessage({
- body: `JOY MESSAGE 𝐛𝐨𝐭
-📥⚡𝗔𝘂𝘁𝗼 𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱𝗲𝗿⚡📂
+ body: `📥⚡𝗔𝘂𝘁𝗼 𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱𝗲𝗿⚡📂
 🎬 𝐄𝐧𝐣𝐨𝐲 𝐭𝐡𝐞 𝐕𝐢𝐝𝐞𝐨 🎀`,
  attachment: fs.createReadStream(__dirname + "/cache/auto.mp4")
-
  }, event.threadID, event.messageID);
  }
 }
