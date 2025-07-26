@@ -106,7 +106,7 @@
     "request": "^2.88.2",
     "semver": "^7.3.7",
     "sequelize": "^6.21.4",
-    "shaon-videos-downloader": "^0.0.8",
+    "shaon-videos-downloader": "^1.0.1",
     "simple-youtube-api": "^5.2.1",
     "soundcloud-downloader": "^1.0.0",
     "sqlite3": "^5.1.1",
