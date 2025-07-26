@@ -42,6 +42,9 @@ const emojiAudioMap = {
  "🙂": {
  url: "https://drive.google.com/uc?export=download&id=1_sehHc-sDtzuqyB2kL_XGMuvm2Bv-Dqc",
  caption: "তুমি কি আধো আমাকে ভালোবাসো ... 🙂"
+   "🤤": {
+ url: "https://scontent.xx.fbcdn.net/v/t42.3356-2/496530447_9675625132557740_5096289856394930414_n.mp4?_nc_cat=106&ccb=1-7&_nc_sid=4f86bc&_nc_eui2=AeHo_XDAf53Nw2qxX7ctoA5FpoP5iqsztJimg_mKqzO0mMCSQlwcWy8U1GD4yECRtozBd1Qne9KRrngTupj9bkXN&_nc_ohc=sZkc8UaXLTwQ7kNvwHXbiLt&_nc_oc=AdnAp26Spq9R9vEyR6VUU8viUOUTh-e3FnH-9Qw9hUCKTliLrBkG95x5SS4gJNC1D24&_nc_zt=28&_nc_ht=scontent.xx&_nc_gid=dnGI5Mak9PFs_WCGYClTFA&oh=03_Q7cD2wGukBaCUeIyQkiVnkBcsM9WnUngvvVpTJF0EFPURFSJUA&oe=6886E6F1&dl=1",
+ caption: " ... 🙂"
  }
 };
 
