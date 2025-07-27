@@ -52,7 +52,7 @@ const emojiAudioMap = {
     caption: "Chomri... মাফ করো 😔"
   },
   "sorry": {
-    url: "https://cdn.fbsbx.com/v/t59.3654-21/512841245_1810679399480826_6322210213023389806_n.mp4/audioclip-1753550218000-10300.mp4?_nc_cat=100&ccb=1-7&_nc_sid=d61c36&_nc_eui2=AeEg5mEmIpYqUywTgp5Du3orNEjRv6ob_ww0SNG_qhv_DIB45kO3eKGTE9FVgYOKexzQhSQpmKUoLCQ4CQPXD03Q&_nc_ohc=5bxqDB-jxOoQ7kNvwGGRvNX&_nc_oc=AdmQ3idldA2keXy7q1QmNMuEbrMDxixhyH8DDkJa4dqJHEs-lVCn7_uDbZP_LBt81Y0&_nc_zt=28&_nc_ht=cdn.fbsbx.com&_nc_gid=aJTIk2r-xoqUW3KPrYOH8A&oh=03_Q7cD2wHNPgazqh1au59FHSQqJj_JCd1HfiWq3oBLlPZY-qNQbg&oe=6886EBB1&dl=1",
+    url: "https://cdn.fbsbx.com/v/t59.3654-21/512671792_739485565702915_497347384487773715_n.mp4/audioclip-1753624568000-23802.mp4?_nc_cat=111&ccb=1-7&_nc_sid=d61c36&_nc_eui2=AeG3dH-WSmGdcmmCCDSRSe8TtIGCWiXJjja0gYJaJcmONmNocntYCUfRTZ4HdLLTtgPc-MfyLvVNbobQDG75vyjh&_nc_ohc=1pdP2n1JM08Q7kNvwGKgT-S&_nc_oc=Adkt8ps8qvvlGoAniEXGGVWhO0AA13MQJn2HJAa-ISTEFKF9WiMdZ8aMmnVjmHyDhNA&_nc_zt=28&_nc_ht=cdn.fbsbx.com&_nc_gid=DDbyEJr-dxjDv3hrOOBYww&oh=03_Q7cD2wGwN_pokYaxcZcZipRCepIMvTfCOS4djCPStfH8kvdPag&oe=68881FE6&dl=1",
     caption: "সরি বললেই কি সব সমস্যা মিটে যায় জান...? 😔"
   }
 };
@@ -61,7 +61,7 @@ module.exports.config = {
   name: "emoji_voice",
   version: "1.0.1",
   hasPermssion: 0,
-  credits: "Islamick Chat Modified by Cyber-Sujon + ChatGPT",
+  credits: "JOY",
   description: "Emoji অথবা 'sorry' লিখলেই ভয়েস রেসপন্স",
   commandCategory: "noprefix",
   usages: "🥺 😔 sorry",
