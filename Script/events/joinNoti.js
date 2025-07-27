@@ -1,89 +1,139 @@
 module.exports.config = {
-    name: "joinNoti",
-    eventType: ["log:subscribe"],
-    version: "1.0.1",
-    credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
-    description: "Notification of bots or people entering groups with random gif/photo/video",
-    dependencies: {
-        "fs-extra": "",
-        "path": "",
-        "pidusage": ""
-    }
+  name: "join",
+  eventType: ['log:subscribe'],
+  version: "1.0.1",
+  credits: "Jehad Joy Edit by ChatGPT",
+  description: "নতুন মেম্বার এলে ওয়েলকাম ইমেজ সহ বার্তা"
 };
- 
-module.exports.onLoad = function () {
-    const { existsSync, mkdirSync } = global.nodemodule["fs-extra"];
-    const { join } = global.nodemodule["path"];
- 
-    const path = join(__dirname, "cache", "joinvideo");
-    if (existsSync(path)) mkdirSync(path, { recursive: true }); 
- 
-    const path2 = join(__dirname, "cache", "joinvideo", "randomgif");
-    if (!existsSync(path2)) mkdirSync(path2, { recursive: true });
- 
-    return;
+
+const ADMIN = 'Jehad Joy';
+const FB_LINK = 'https://facebook.com/jehad.joy.fb';
+
+const fs = require('fs-extra');
+const axios = require('axios');
+const { loadImage, createCanvas, registerFont } = require('canvas');
+const jimp = require("jimp");
+const moment = require("moment-timezone");
+
+const FONT_LINK = 'https://drive.google.com/u/0/uc?id=1ZwFqYB-x6S9MjPfYm3t3SP1joohGl4iw&export=download';
+
+module.exports.circle = async (image) => {
+  image = await jimp.read(image);
+  image.circle();
+  return await image.getBufferAsync("image/png");
 }
- 
- 
-module.exports.run = async function({ api, event }) {
-    const { join } = global.nodemodule["path"];
-    const { threadID } = event;
-    if (event.logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
-        api.changeNickname(`[ ${global.config.PREFIX} ] • ${(!global.config.BOTNAME) ? " " : global.config.BOTNAME}`, threadID, api.getCurrentUserID());
-        const fs = require("fs");
-        return api.sendMessage("", event.threadID, () => api.sendMessage({body: `╭•┄┅═══❁🌺❁═══┅┄•╮\n   আসসালামু আলাইকুম-!!🖤💫\n╰•┄┅═══❁🌺❁═══┅┄•╯
 
-________________________
+module.exports.run = async function({ api, event, Users }) {
+  const threadID = event.threadID;
+  const { logMessageData } = event;
 
-𝐓𝐡𝐚𝐧𝐤 𝐲𝐨𝐮 𝐬𝐨 𝐦𝐮𝐜𝐡 𝐟𝐨𝐫 𝐚dd𝐢𝐧𝐠 𝐦𝐞 𝐭𝐨 𝐲𝐨𝐮𝐫 𝐢-𝐠𝐫𝐨𝐮𝐩-🖤🤗\n\n𝐈 𝐰𝐢𝐥𝐥 𝐚𝐥𝐰𝐚𝐲𝐬 𝐬𝐞𝐫𝐯𝐞 𝐲𝐨𝐮 𝐢𝐧𝐚𝐡𝐚𝐥𝐥𝐚𝐡 🌺❤️-!!
+  const time = moment.tz("Asia/Dhaka").format("hh:mm A - DD MMMM YYYY");
+  const session = moment().tz("Asia/Dhaka").format("A") === "AM" ? "সকাল" : "বিকেল";
+  const day = moment().tz("Asia/Dhaka").format("dddd");
 
-________________________\n\n𝐓𝐨 𝐯𝐢𝐞𝐰 𝐚𝐧𝐲 𝐜𝐨𝐦𝐦𝐚𝐧d
+  const threadInfo = await api.getThreadInfo(threadID);
+  const threadName = threadInfo.threadName;
+  const participantIDs = threadInfo.participantIDs;
 
-${global.config.PREFIX}Help\n${global.config.PREFIX} Manu
+  // যদি বট নিজে এড হয়
+  if (logMessageData.addedParticipants.some(i => i.userFbId == api.getCurrentUserID())) {
+    let gifUrl = 'https://i.imgur.com/4HMupHz.gif';
+    let gifPath = __dirname + '/cache/join.gif';
 
-𝐁𝐎𝐓 𝐍𝐀𝐌𝐄 :𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️
+    let res = await axios.get(gifUrl, { responseType: 'arraybuffer' });
+    fs.writeFileSync(gifPath, res.data);
 
-\n\n⋆✦⋆⎯⎯⎯⎯⎯⎯⎯⎯⎯⋆✦⋆
-`, attachment: fs.createReadStream(__dirname + "/cache/ullash.mp4")} ,threadID));
+    return api.sendMessage({
+      body: `🤖 হ্যালো! আমি সফলভাবে ${threadName} গ্রুপে যুক্ত হয়েছি ✅
+
+🔹 সময়: ${time}
+🔹 কমান্ড সংখ্যা: ${global.client.commands.size}
+🔹 Prefix: ${global.config.PREFIX}
+🔹 এডমিন: ${ADMIN}
+🔹 Facebook: ${FB_LINK}
+🔹 কমান্ড দেখতে লিখুন: ${global.config.PREFIX}help`,
+      attachment: fs.createReadStream(gifPath)
+    }, threadID);
+  }
+
+  // New user join হলে
+  try {
+    if (!fs.existsSync(__dirname + `/cache/font/Semi.ttf`)) {
+      let fontBuffer = (await axios.get(FONT_LINK, { responseType: "arraybuffer" })).data;
+      fs.writeFileSync(__dirname + `/cache/font/Semi.ttf`, fontBuffer);
     }
-    else {
-        try {
-            const { createReadStream, existsSync, mkdirSync, readdirSync } = global.nodemodule["fs-extra"];
-            let { threadName, participantIDs } = await api.getThreadInfo(threadID);
- 
-            const threadData = global.data.threadData.get(parseInt(threadID)) || {};
-            const path = join(__dirname, "cache", "joinvideo");
-            const pathGif = join(path, `${threadID}.video`);
- 
-            var mentions = [], nameArray = [], memLength = [], i = 0;
-            
-            for (id in event.logMessageData.addedParticipants) {
-                const userName = event.logMessageData.addedParticipants[id].fullName;
-                nameArray.push(userName);
-                mentions.push({ tag: userName, id });
-                memLength.push(participantIDs.length - i++);
-            }
-            memLength.sort((a, b) => a - b);
-            
-            (typeof threadData.customJoin == "undefined") ? msg = "╭•┄┅═══❁🌺❁═══┅┄•╮\n   আসসালামু আলাইকুম-!!🖤\n╰•┄┅═══❁🌺❁═══┅┄•╯ \n\n    ✨🆆🅴🅻🅻 🅲🅾🅼🅴✨\n\n                ❥𝐍𝐄𝐖~\n\n        ~🇲‌🇪‌🇲‌🇧‌🇪‌🇷‌~\n\n        [   {name} ]\n\n༆-✿ আপনাকে আমাদের࿐\n\n{threadName}\n\n🌺✨!!—এর পক্ষ-থেকে-!!✨🌺\n\n❤️🫰_ভালোবাস_অভিরাম_🫰❤️\n\n༆-✿আপনি_এই_গ্রুপের {soThanhVien} নং মেম্বার࿐\n\n╭•┄┅═══❁🌺❁═══┅┄•╮\n  🌸   𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️  🌸\n╰•┄┅═══❁🌺❁═══┅┄•╯" : msg = threadData.customJoin;
-            msg = msg
-            .replace(/\{name}/g, nameArray.join(', '))
-            .replace(/\{type}/g, (memLength.length > 1) ?  'Friends' : 'Friend')
-            .replace(/\{soThanhVien}/g, memLength.join(', '))
-            .replace(/\{threadName}/g, threadName);
- 
-            if (existsSync(path)) mkdirSync(path, { recursive: true });
- 
-            const randomPath = readdirSync(join(__dirname, "cache", "joinGif", "randomgif"));
- 
-            if (existsSync(pathGif)) formPush = { body: msg, attachment: createReadStream(pathvideo), mentions }
-            else if (randomPath.length != 0) {
-                const pathRandom = join(__dirname, "cache", "joinGif", "randomgif", `${randomPath[Math.floor(Math.random() * randomPath.length)]}`);
-                formPush = { body: msg, attachment: createReadStream(pathRandom), mentions }
-            }
-            else formPush = { body: msg, mentions }
- 
-            return api.sendMessage(formPush, threadID);
-        } catch (e) { return console.log(e) };
+
+    registerFont(__dirname + `/cache/font/Semi.ttf`, { family: "Semi" });
+
+    let attachments = [];
+    let mentions = [];
+    let nameArray = [];
+
+    for (let i = 0; i < logMessageData.addedParticipants.length; i++) {
+      let user = logMessageData.addedParticipants[i];
+      let name = user.fullName;
+      let id = user.userFbId;
+
+      nameArray.push(name);
+      mentions.push({ tag: name, id });
+
+      // Avatar
+      let avatarURL = `https://graph.facebook.com/${id}/picture?height=720&width=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
+      let avatarData = (await axios.get(avatarURL, { responseType: 'arraybuffer' })).data;
+      fs.writeFileSync(__dirname + `/cache/avt.png`, avatarData);
+      let avatarCircle = await this.circle(__dirname + `/cache/avt.png`);
+
+      // Background
+      const backgrounds = [
+        'https://i.imgur.com/dDSh0wc.jpeg',
+        'https://i.imgur.com/UucSRWJ.jpeg',
+        'https://i.imgur.com/OYzHKNE.jpeg'
+      ];
+      let bgURL = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+      let bgData = (await axios.get(bgURL, { responseType: 'arraybuffer' })).data;
+      fs.writeFileSync(__dirname + `/cache/bg.png`, bgData);
+
+      let baseImage = await loadImage(__dirname + `/cache/bg.png`);
+      let baseAvatar = await loadImage(avatarCircle);
+      let canvas = createCanvas(1902, 1082);
+      let ctx = canvas.getContext("2d");
+
+      ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(baseAvatar, canvas.width / 2 - 188, canvas.height / 2 - 375, 375, 355);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.font = `90px Semi`;
+      ctx.fillText(name, canvas.width / 2, canvas.height / 2 + 100);
+
+      ctx.font = `65px Semi`;
+      ctx.fillText(`🌺 স্বাগতম ${threadName} গ্রুপে!`, canvas.width / 2, canvas.height / 2 + 200);
+      ctx.fillText(`🔥 এখন আমাদের সদস্য সংখ্যা ${participantIDs.length} জন`, canvas.width / 2, canvas.height / 2 + 300);
+
+      let buffer = canvas.toBuffer();
+      let imgPath = __dirname + `/cache/welcome_${i}.png`;
+      fs.writeFileSync(imgPath, buffer);
+      attachments.push(fs.createReadStream(imgPath));
     }
-              }
+
+    // Welcome message
+    const nameAuthor = await Users.getNameUser(event.author);
+    let message = `🌸 হ্যালো ${nameArray.join(', ')}!\n\nস্বাগতম ${threadName} গ্রুপে 🥰
+
+➤ তোমাকে অ্যাড করেছেন: ${nameAuthor}
+➤ যোগদানের সময়: ${time} (${day}, ${session})
+
+গ্রুপে সক্রিয় থাকতে ভুলো না 😄`;
+
+    await api.sendMessage({ body: message, attachment: attachments, mentions }, threadID);
+
+    // Cleanup
+    fs.unlinkSync(__dirname + `/cache/avt.png`);
+    fs.unlinkSync(__dirname + `/cache/bg.png`);
+    for (let i = 0; i < logMessageData.addedParticipants.length; i++) {
+      fs.unlinkSync(__dirname + `/cache/welcome_${i}.png`);
+    }
+  } catch (e) {
+    console.error("JOIN MODULE ERROR:", e);
+  }
+};
